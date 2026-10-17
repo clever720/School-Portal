@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="EduCore School Management Portal">
+  <title>EduCore | School Management Portal</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="js/app.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="#" aria-label="EduCore home">
+        <span class="brand-icon">E</span>
+        <span>EduCore<small>School Portal</small></span>
+      </a>
+
+      <div class="school-summary">
+        <div class="school-avatar">SC</div>
+        <div>
+          <strong id="sidebar-school-name">My School</strong>
+          <small>Administrator</small>
+        </div>
+      </div>
+
+      <nav id="main-nav" class="main-nav" aria-label="Main navigation">
+        <button class="nav-link active" data-page="dashboard">▦ <span>Dashboard</span></button>
+        <button class="nav-link" data-page="students">♙ <span>Students</span></button>
+        <button class="nav-link" data-page="teachers">♟ <span>Teachers</span></button>
+        <button class="nav-link" data-page="academics">▤ <span>Academics</span></button>
+        <button class="nav-link" data-page="attendance">✓ <span>Attendance</span></button>
+        <button class="nav-link" data-page="exams">▧ <span>Results & Exams</span></button>
+        <button class="nav-link" data-page="fees">₦ <span>School Fees</span></button>
+        <button class="nav-link" data-page="communication">✉ <span>Communication</span></button>
+        <button class="nav-link" data-page="subscriptions">◇ <span>Subscription</span></button>
+        <button class="nav-link" data-page="settings">⚙ <span>Settings</span></button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <span class="status-dot"></span>
+        Starter version
+        <small>Data stored in this browser</small>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow" id="breadcrumb">School administration</p>
+          <h1 id="page-heading">Dashboard</h1>
+        </div>
+        <div class="topbar-actions">
+          <button class="icon-button" id="notification-button"
+                  type="button" aria-label="Show notifications">♧</button>
+          <div class="user-profile">
+            <div class="user-avatar">AD</div>
+            <div><strong>Administrator</strong><small>School Admin</small></div>
+          </div>
+        </div>
+      </header>
+
+      <!-- DASHBOARD -->
+      <section class="page active" id="page-dashboard">
+        <div class="welcome-banner">
+          <div>
+            <span class="banner-label">SCHOOL OVERVIEW</span>
+            <h2>Welcome to EduCore</h2>
+            <p>Manage your school's daily activities from one place.</p>
+          </div>
+          <div class="banner-mark">E</div>
+        </div>
+
+        <div class="stat-grid">
+          <article class="stat-card">
+            <span class="stat-icon blue">♙</span>
+            <p>Total Students</p>
+            <h3 id="stat-students">0</h3>
+            <small>Registered students</small>
+          </article>
+          <article class="stat-card">
+            <span class="stat-icon green">✓</span>
+            <p>Attendance Records</p>
+            <h3 id="stat-attendance">0</h3>
+            <small>Records saved</small>
+          </article>
+          <article class="stat-card">
+            <span class="stat-icon purple">▧</span>
+            <p>Exam Results</p>
+            <h3 id="stat-results">0</h3>
+            <small>Results entered</small>
+          </article>
+          <article class="stat-card">
+            <span class="stat-icon orange">✉</span>
+            <p>Announcements</p>
+            <h3 id="stat-announcements">0</h3>
+            <small>Messages posted</small>
+          </article>
+        </div>
+
+        <div class="content-grid">
+          <article class="panel">
+            <div class="panel-heading">
+              <div><h2>Recently Added Students</h2><p>Your latest student records</p></div>
+              <button class="button button-light" data-go="students" type="button">View all</button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Student</th><th>Student ID</th><th>Class</th></tr>
+                </thead>
+                <tbody id="recent-students">
+                  <tr><td colspan="3" class="empty-state">No students added yet.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-heading">
+              <div><h2>Quick Actions</h2><p>Common school tasks</p></div>
+            </div>
+            <div class="quick-actions">
+              <button class="quick-action" data-go="students" type="button">
+                <span>＋</span><div><strong>Add a student</strong><small>Register a new student</small></div>
+              </button>
+              <button class="quick-action" data-go="attendance" type="button">
+                <span>✓</span><div><strong>Take attendance</strong><small>Record daily attendance</small></div>
+              </button>
+              <button class="quick-action" data-go="exams" type="button">
+                <span>▤</span><div><strong>Enter results</strong><small>Record examination scores</small></div>
+              </button>
+              <button class="quick-action" data-go="communication" type="button">
+                <span>✉</span><div><strong>Post announcement</strong><small>Share a school notice</small></div>
+              </button>
+            </div>
+          </article>
+        </div>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div><h2>Portal Modules</h2><p>Navigate to a management section</p></div>
+          </div>
+          <div class="module-grid" id="module-grid">
+            <button class="module-card" data-go="students" type="button"><span>♙</span><strong>Students</strong><small>Student records</small></button>
+            <button class="module-card" data-go="teachers" type="button"><span>♟</span><strong>Teachers</strong><small>Staff directory</small></button>
+            <button class="module-card" data-go="academics" type="button"><span>▤</span><strong>Academics</strong><small>Classes and subjects</small></button>
+            <button class="module-card" data-go="attendance" type="button"><span>✓</span><strong>Attendance</strong><small>Daily register</small></button>
+            <button class="module-card" data-go="exams" type="button"><span>▧</span><strong>Results</strong><small>Examination records</small></button>
+            <button class="module-card" data-go="fees" type="button"><span>₦</span><strong>School Fees</strong><small>Fee tracking</small></button>
+          </div>
+        </article>
+      </section>
+
+      <!-- STUDENTS -->
+      <section class="page" id="page-students">
+        <div class="page-intro">
+          <div><h2>Student Management</h2><p>Register and manage student records.</p></div>
+          <button class="button button-primary" id="toggle-student-form" type="button">＋ Add Student</button>
+        </div>
+
+        <article class="panel hidden" id="student-form-panel">
+          <div class="panel-heading"><div><h2>Student Details</h2><p>Enter the student's information.</p></div></div>
+          <form id="student-form" class="form-grid">
+            <label>Full name
+              <input id="student-name" name="studentName" required maxlength="100" placeholder="e.g. Ada Okafor">
+            </label>
+            <label>Student ID
+              <input id="student-id" name="studentId" required maxlength="40" placeholder="e.g. EC001">
+            </label>
+            <label>Class
+              <input id="student-class" name="studentClass" required maxlength="50" placeholder="e.g. JSS 1">
+            </label>
+            <label>Parent/Guardian email
+              <input id="parent-email" name="parentEmail" type="email" placeholder="parent@example.com">
+            </label>
+            <div class="form-actions">
+              <button class="button button-primary" type="submit">Save Student</button>
+              <button class="button button-light" id="cancel-student" type="button">Cancel</button>
+            </div>
+          </form>
+        </article>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div><h2>Student Directory</h2><p id="student-count-label">0 students</p></div>
+            <input class="search-input" id="student-search" type="search" placeholder="Search students..." aria-label="Search students">
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Student ID</th><th>Full Name</th><th>Class</th><th>Parent Email</th><th>Action</th></tr></thead>
+              <tbody id="students-table"><tr><td colspan="5" class="empty-state">No students registered.</td></tr></tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+
+      <!-- TEACHERS -->
+      <section class="page" id="page-teachers">
+        <div class="page-intro"><div><h2>Teacher Directory</h2><p>View a sample staff directory for your school.</p></div></div>
+        <article class="panel">
+          <div class="notice">The teacher management form is a future module. These sample entries are not saved staff records.</div>
+          <div class="table-wrap">
+            <table><thead><tr><th>Teacher</th><th>Department</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td>Sample Teacher</td><td>General Studies</td><td><span class="pill">Demo</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+
+      <!-- ACADEMICS -->
+      <section class="page" id="page-academics">
+        <div class="page-intro"><div><h2>Academics</h2><p>Suggested academic structure for your school.</p></div></div>
+        <div class="stat-grid">
+          <article class="stat-card"><span class="stat-icon blue">01</span><p>Primary</p><h3>Primary 1–6</h3><small>Example class structure</small></article>
+          <article class="stat-card"><span class="stat-icon green">02</span><p>Junior Secondary</p><h3>JSS 1–3</h3><small>Example class structure</small></article>
+          <article class="stat-card"><span class="stat-icon purple">03</span><p>Senior Secondary</p><h3>SSS 1–3</h3><small>Example class structure</small></article>
+        </div>
+        <article class="panel">
+          <h2>Suggested Subjects</h2>
+          <div class="tag-list"><span>English Language</span><span>Mathematics</span><span>Basic Science</span><span>Social Studies</span><span>Computer Studies</span><span>Civic Education</span></div>
+          <p class="muted">These are examples only. Custom class and subject management can be added later.</p>
+        </article>
+      </section>
+
+      <!-- ATTENDANCE -->
+      <section class="page" id="page-attendance">
+        <div class="page-intro"><div><h2>Attendance Register</h2><p>Record attendance for registered students.</p></div></div>
+        <article class="panel">
+          <div class="panel-heading">
+            <div><h2>Daily Attendance</h2><p>Select a date and mark each student.</p></div>
+            <label class="compact-label">Date
+              <input type="date" id="attendance-date" required>
+            </label>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Student ID</th><th>Student</th><th>Class</th><th>Status</th></tr></thead>
+              <tbody id="attendance-table"><tr><td colspan="4" class="empty-state">Add students before taking attendance.</td></tr></tbody>
+            </table>
+          </div>
+          <div class="form-actions"><button class="button button-primary" id="save-attendance" type="button">Save Attendance</button></div>
+        </article>
+      </section>
+
+      <!-- EXAMS AND RESULTS -->
+      <section class="page" id="page-exams">
+        <div class="page-intro"><div><h2>Results & Exams</h2><p>Record scores for registered students.</p></div></div>
+        <article class="panel">
+          <div class="panel-heading"><div><h2>Enter Result</h2><p>Scores must be between 0 and 100.</p></div></div>
+          <form id="result-form" class="form-grid">
+            <label>Student
+              <select id="result-student" required><option value="">Select student</option></select>
+            </label>
+            <label>Subject
+              <input id="result-subject" required maxlength="80" placeholder="e.g. Mathematics">
+            </label>
+            <label>Score (0–100)
+              <input id="result-score" type="number" min="0" max="100" required placeholder="e.g. 85">
+            </label>
+            <div class="form-actions"><button class="button button-primary" type="submit">Save Result</button></div>
+          </form>
+        </article>
+        <article class="panel">
+          <div class="panel-heading"><div><h2>Recorded Results</h2><p>Saved results in this browser.</p></div></div>
+          <div class="table-wrap">
+            <table><thead><tr><th>Student</th><th>Subject</th><th>Score</th><th>Grade</th><th>Action</th></tr></thead>
+              <tbody id="results-table"><tr><td colspan="5" class="empty-state">No results recorded yet.</td></tr></tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+
+      <!-- FEES -->
+      <section class="page" id="page-fees">
+        <div class="page-intro"><div><h2>School Fees</h2><p>Plan your fee-management workflow.</p></div></div>
+        <article class="panel">
+          <div class="notice">Fee collection is not connected to a payment provider in this starter version. Do not treat this screen as proof of payment.</div>
+          <h2>Future fee-management features</h2>
+          <ul class="feature-list">
+            <li>Set fees by class and term</li>
+            <li>Record invoices and payments</li>
+            <li>Track balances and outstanding fees</li>
+            <li>Generate receipts and financial reports</li>
+            <li>Integrate a payment gateway such as Paystack after server-side setup</li>
+          </ul>
+        </article>
+      </section>
+
+      <!-- COMMUNICATION -->
+      <section class="page" id="page-communication">
+        <div class="page-intro"><div><h2>Communication</h2><p>Publish announcements for your school community.</p></div></div>
+        <article class="panel">
+          <div class="panel-heading"><div><h2>New Announcement</h2><p>Messages are saved locally in this demo.</p></div></div>
+          <form id="announcement-form">
+            <label>Announcement message
+              <textarea id="announcement-message" rows="4" maxlength="1000" required placeholder="Write your school announcement..."></textarea>
+            </label>
+            <div class="form-actions"><button class="button button-primary" type="submit">Publish Announcement</button></div>
+          </form>
+        </article>
+        <article class="panel">
+          <div class="panel-heading"><div><h2>Announcement Board</h2><p>Recent messages</p></div></div>
+          <div id="announcement-list" class="announcement-list"><p class="empty-state">No announcements published yet.</p></div>
+        </article>
+      </section>
+
+      <!-- SUBSCRIPTION -->
+      <section class="page" id="page-subscriptions">
+        <div class="page-intro"><div><h2>Subscription Plans</h2><p>Example pricing for EduCore. No payments are processed here.</p></div></div>
+        <div class="pricing-grid">
+          <article class="pricing-card">
+            <span class="plan-label">STARTER</span><h2>Basic</h2><p class="price">₦50,000 <small>/ year</small></p>
+            <p class="muted">For small schools</p>
+            <ul><li>Up to 100 students</li><li>Student records</li><li>Attendance and results</li></ul>
+            <button class="button button-light choose-plan" data-plan="Basic" type="button">Select Basic</button>
+          </article>
+          <article class="pricing-card featured">
+            <span class="plan-label">POPULAR</span><h2>Standard</h2><p class="price">₦120,000 <small>/ year</small></p>
+            <p class="muted">For growing schools</p>
+            <ul><li>Up to 500 students</li><li>Core school modules</li><li>Expanded reporting (planned)</li></ul>
+            <button class="button button-primary choose-plan" data-plan="Standard" type="button">Select Standard</button>
+          </article>
+          <article class="pricing-card">
+            <span class="plan-label">ADVANCED</span><h2>Premium</h2><p class="price">₦250,000 <small>/ year</small></p>
+            <p class="muted">For larger schools</p>
+            <ul><li>Up to 1,500 students</li><li>Advanced modules (planned)</li><li>Priority support (planned)</li></ul>
+            <button class="button button-light choose-plan" data-plan="Premium" type="button">Select Premium</button>
+          </article>
+        </div>
+        <article class="panel">
+          <h2>Current Demo Selection</h2>
+          <p>Your selected plan: <strong id="current-plan">Trial</strong></p>
+          <p class="muted">Selecting a plan here does not create a subscription or charge money. Live billing requires a backend and payment integration.</p>
+        </article>
+      </section>
+
+      <!-- SETTINGS -->
+      <section class="page" id="page-settings">
+        <div class="page-intro"><div><h2>School Settings</h2><p>Set your school identity and academic term.</p></div></div>
+        <article class="panel">
+          <div class="panel-heading"><div><h2>School Profile</h2><p>These preferences are saved in this browser.</p></div></div>
+          <form id="settings-form" class="form-grid">
+            <label>School name
+              <input id="school-name" required maxlength="120" placeholder="Enter school name">
+            </label>
+            <label>School email
+              <input id="school-email" type="email" placeholder="school@example.com">
+            </label>
+            <label>Academic session
+              <input id="academic-session" maxlength="30" placeholder="e.g. 2026/2027">
+            </label>
+            <label>Current term
+              <select id="academic-term">
+                <option value="First Term">First Term</option>
+                <option value="Second Term">Second Term</option>
+                <option value="Third Term">Third Term</option>
+              </select>
+            </label>
+            <div class="form-actions"><button class="button button-primary" type="submit">Save Settings</button></div>
+          </form>
+        </article>
+        <article class="panel">
+          <h2>Demo Data</h2>
+          <p class="muted">This button permanently clears EduCore data saved in this browser. Export important information before using it.</p>
+          <button class="button button-danger" id="clear-data" type="button">Clear Demo Data</button>
+        </article>
+      </section>
+
+      <footer class="footer">
+        <span>© <span id="year"></span> EduCore School Portal</span>
+        <span>Starter edition · Not yet production-ready</span>
+      </footer>
+    </main>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
