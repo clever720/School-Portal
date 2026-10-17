@@ -1,0 +1,598 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#123b32">
+<title>EduSphere | School Portal</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+ --green:#123b32;--green2:#1e6551;--lime:#d8f36a;--bg:#f4f7f5;
+ --white:#fff;--text:#172b25;--muted:#6b7d76;--line:#e3eae6;
+ --red:#b93838;--shadow:0 8px 28px #183d2c0b
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+ font:15px/1.5 Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+a{color:var(--green2)}
+.hidden{display:none!important}
+.muted{color:var(--muted)}
+.small{font-size:12px}
+.brand{display:flex;align-items:center;gap:11px;font-weight:800;font-size:20px}
+.logo{width:42px;height:42px;border-radius:13px;background:var(--lime);
+ display:grid;place-items:center;color:var(--green);font-weight:900}
+#authScreen{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;background:white}
+.auth-art{background:var(--green);color:white;padding:8vw;display:flex;
+ flex-direction:column;justify-content:space-between;min-height:100vh}
+.auth-art h1{font-size:clamp(32px,4vw,58px);line-height:1.08;max-width:540px}
+.auth-art p{color:#c4d9d0;max-width:450px}
+.auth-art .logo{width:54px;height:54px;font-size:22px}
+.auth-form-wrap{display:grid;place-items:center;padding:28px}
+.auth-form{width:100%;max-width:430px}
+.auth-form h2{font-size:30px;margin-bottom:5px}
+.field{display:flex;flex-direction:column;gap:6px;margin:13px 0}
+.field label{font-size:13px;font-weight:700}
+input,select,textarea{width:100%;border:1px solid var(--line);border-radius:10px;
+ padding:11px 12px;background:white;color:var(--text);outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--green2);
+ box-shadow:0 0 0 3px #1e65511c}
+textarea{resize:vertical;min-height:85px}
+.btn{border:0;border-radius:10px;padding:11px 15px;font-weight:700;
+ background:var(--green);color:white;display:inline-flex;justify-content:center;
+ align-items:center;gap:7px}
+.btn:hover{filter:brightness(1.1)}
+.btn.secondary{background:#edf3ef;color:var(--green)}
+.btn.lime{background:var(--lime);color:var(--green)}
+.btn.danger{background:#fff0f0;color:var(--red)}
+.btn.block{width:100%}
+.link-btn{background:none;border:0;color:var(--green2);font-weight:700;padding:8px 0}
+#app{min-height:100vh}
+.sidebar{position:fixed;inset:0 auto 0 0;width:250px;background:var(--green);
+ color:white;padding:23px 16px;display:flex;flex-direction:column;z-index:5}
+.sidebar .brand{padding:0 9px 28px}
+.sidebar .logo{background:var(--lime)}
+.nav-label{color:#9dbdb0;font-size:11px;letter-spacing:1.4px;
+ text-transform:uppercase;padding:16px 12px 7px}
+.nav-btn{display:flex;align-items:center;gap:12px;padding:11px 12px;
+ border:0;border-radius:10px;color:#d5e4dd;background:transparent;
+ text-align:left;width:100%;margin:2px 0}
+.nav-btn span:first-child{width:22px;text-align:center}
+.nav-btn:hover,.nav-btn.active{background:#ffffff18;color:white}
+.nav-btn.active{box-shadow:inset 3px 0 var(--lime)}
+.sidebar-bottom{margin-top:auto;border-top:1px solid #ffffff24;padding-top:14px}
+.main{margin-left:250px;min-height:100vh}
+.topbar{height:76px;background:#ffffffed;border-bottom:1px solid var(--line);
+ display:flex;align-items:center;justify-content:space-between;padding:0 32px;
+ position:sticky;top:0;z-index:4;backdrop-filter:blur(10px)}
+.topbar-title{font-size:18px;font-weight:800}
+.profile{display:flex;align-items:center;gap:10px}
+.avatar{width:39px;height:39px;border-radius:50%;background:#e7f0e9;
+ display:grid;place-items:center;font-weight:800;color:var(--green)}
+.content{padding:30px;max-width:1500px;margin:auto}
+.page-heading{display:flex;justify-content:space-between;align-items:flex-start;
+ gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.page-heading h1{font-size:28px;letter-spacing:-.6px;margin:0 0 5px}
+.page-heading p{margin:0;color:var(--muted)}
+.grid{display:grid;gap:18px}
+.stats{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:22px}
+.card{background:white;border:1px solid var(--line);border-radius:16px;
+ padding:21px;box-shadow:var(--shadow);min-width:0}
+.stat-top{display:flex;justify-content:space-between;align-items:center}
+.stat-icon{width:42px;height:42px;border-radius:12px;background:#edf5ef;
+ display:grid;place-items:center;font-size:20px}
+.stat-value{font-size:30px;font-weight:850;margin:14px 0 0}
+.stat-label{color:var(--muted);font-size:13px}
+.two-col{grid-template-columns:minmax(0,1.5fr) minmax(260px,1fr)}
+.card-title{font-size:16px;font-weight:800;margin:0 0 16px}
+.list{display:flex;flex-direction:column}
+.list-item{padding:14px 0;border-bottom:1px solid var(--line)}
+.list-item:last-child{border-bottom:0}
+.list-item strong{display:block;margin-bottom:3px}
+.pill{display:inline-flex;align-items:center;padding:4px 9px;border-radius:30px;
+ background:#edf5ef;color:var(--green2);font-size:11px;font-weight:800}
+.pill.warn{background:#fff4d9;color:#88620b}
+.pill.red{background:#fff0f0;color:var(--red)}
+.toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:17px}
+.toolbar input{max-width:320px}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px}
+table{border-collapse:collapse;width:100%;min-width:620px;background:white}
+th,td{padding:13px 15px;text-align:left;border-bottom:1px solid var(--line);
+ font-size:13px;vertical-align:top}
+th{background:#f7faf8;color:var(--muted);font-size:11px;
+ text-transform:uppercase;letter-spacing:.5px}
+tr:last-child td{border-bottom:0}
+.empty{text-align:center;padding:36px;color:var(--muted)}
+.module-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+.span-2{grid-column:1/-1}
+.form-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:16px}
+.notice{padding:12px 14px;border-radius:10px;background:#edf5ef;
+ color:var(--green);margin:12px 0;font-size:13px}
+.error{background:#fff0f0;color:var(--red)}
+.menu-toggle{display:none}
+#toast{position:fixed;bottom:20px;right:20px;background:var(--green);
+ color:white;padding:13px 18px;border-radius:12px;box-shadow:var(--shadow);
+ z-index:20;max-width:min(420px,90vw)}
+footer{padding:28px;color:var(--muted);font-size:12px;text-align:center}
+@media(max-width:1050px){
+ .sidebar{width:220px}.main{margin-left:220px}.stats{grid-template-columns:repeat(2,1fr)}
+ .content{padding:22px}.topbar{padding:0 22px}
+}
+@media(max-width:760px){
+ #authScreen{grid-template-columns:1fr}.auth-art{display:none}
+ .sidebar{transform:translateX(-100%);transition:transform .2s;width:260px}
+ .sidebar.open{transform:translateX(0);box-shadow:0 0 0 100vmax #0006}
+ .main{margin-left:0}.menu-toggle{display:inline-flex}
+ .topbar{height:66px;padding:0 15px}.content{padding:18px 14px}
+ .two-col,.module-grid{grid-template-columns:1fr}
+ .page-heading h1{font-size:24px}.stats{gap:10px}
+ .card{padding:16px}.stat-value{font-size:25px}
+ .profile .profile-meta{display:none}.form-grid{grid-template-columns:1fr}
+ .span-2{grid-column:auto}
+}
+</style>
+</head>
+<body>
+<section id="authScreen">
+ <div class="auth-art">
+  <div class="brand"><div class="logo">E</div> EduSphere</div>
+  <div>
+   <p>ONE CONNECTED SCHOOL COMMUNITY</p>
+   <h1>Better learning starts with better connection.</h1>
+   <p>Bring teaching, student progress, families and school administration
+      together in one secure digital space.</p>
+  </div>
+  <div class="small">A school portal for the whole community.</div>
+ </div>
+ <div class="auth-form-wrap">
+  <form class="auth-form" id="authForm">
+   <div class="brand"><div class="logo">E</div> EduSphere</div>
+   <h2 id="authTitle" style="margin-top:35px">Welcome back</h2>
+   <p class="muted" id="authSubtitle">Sign in to continue to your school portal.</p>
+   <div id="registerFields" class="hidden">
+    <div class="field"><label for="fullName">Full name</label>
+     <input id="fullName" autocomplete="name" placeholder="Your full name"></div>
+   </div>
+   <div class="field"><label for="email">Email address</label>
+    <input id="email" type="email" autocomplete="email" required placeholder="you@school.com"></div>
+   <div class="field"><label for="password">Password</label>
+    <input id="password" type="password" minlength="8" required
+     autocomplete="current-password" placeholder="At least 8 characters"></div>
+   <button class="btn block" id="authSubmit" type="submit">Sign in</button>
+   <p id="authMessage" class="muted small"></p>
+   <p class="muted">New to the portal? <button class="link-btn" type="button"
+     id="toggleAuth">Create an account</button></p>
+   <p class="small muted">Account role assignments are managed by school administrators.</p>
+  </form>
+ </div>
+</section>
+
+<div id="app" class="hidden">
+ <aside class="sidebar" id="sidebar">
+  <div class="brand"><div class="logo">E</div> EduSphere</div>
+  <div class="nav-label">Workspace</div>
+  <button class="nav-btn active" data-page="dashboard"><span>▦</span> Dashboard</button>
+  <button class="nav-btn" data-page="announcements"><span>◉</span> Announcements</button>
+  <button class="nav-btn" data-page="courses"><span>▤</span> Courses</button>
+  <button class="nav-btn" data-page="assignments"><span>✓</span> Assignments</button>
+  <button class="nav-btn" data-page="grades"><span>▥</span> Grades</button>
+  <button class="nav-btn" data-page="attendance"><span>◷</span> Attendance</button>
+  <div class="nav-label">School services</div>
+  <button class="nav-btn" data-page="requests"><span>✉</span> Requests</button>
+  <button class="nav-btn" data-page="contacts"><span>♧</span> Contacts</button>
+  <button class="nav-btn" data-page="calendar"><span>▦</span> Calendar</button>
+  <div class="sidebar-bottom">
+   <button class="nav-btn" data-page="profile"><span>⚙</span> My profile</button>
+   <button class="nav-btn" id="signOut"><span>↪</span> Sign out</button>
+  </div>
+ </aside>
+ <main class="main">
+  <header class="topbar">
+   <div style="display:flex;align-items:center;gap:12px">
+    <button class="btn secondary menu-toggle" id="menuToggle" aria-label="Open menu">☰</button>
+    <div><div class="topbar-title" id="topTitle">Dashboard</div>
+     <div class="small muted" id="todayText"></div></div>
+   </div>
+   <div class="profile"><div class="avatar" id="avatar">U</div>
+    <div class="profile-meta"><strong id="userName">User</strong>
+     <div class="small muted" id="userRole">Student</div></div>
+   </div>
+  </header>
+  <section class="content" id="pageContent" aria-live="polite"></section>
+  <footer>EduSphere School Portal · Protect student information and share access responsibly.</footer>
+ </main>
+</div>
+<div id="toast" class="hidden" role="status"></div>
+
+<script>
+/* STEP 1: Enter your Supabase project URL and publishable/anon key.
+   Never put a service_role or secret key in browser JavaScript. */
+const SCHOOL_CONFIG = {
+  url: "YOUR_SUPABASE_PROJECT_URL",
+  key: "YOUR_SUPABASE_PUBLISHABLE_OR_ANON_KEY",
+  name: "EduSphere School"
+};
+
+const $ = id => document.getElementById(id);
+const esc = value => String(value ?? "").replace(/[&<>"']/g, c =>
+  ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const dateText = value => value ? new Date(value).toLocaleDateString() : "—";
+const timeNow = () => new Date().toLocaleDateString(undefined,
+  {weekday:"long",month:"long",day:"numeric",year:"numeric"});
+
+let db = null, currentUser = null, profile = null, registerMode = false;
+let activePage = "dashboard", toastTimer = null;
+const staffRoles = ["teacher","staff","admin"];
+const adminRoles = ["admin"];
+
+const modules = {
+ announcements:{
+  title:"Announcements",table:"announcements",icon:"◉",
+  description:"School-wide updates and important notices.",
+  fields:[
+   {name:"title",label:"Announcement title",required:true},
+   {name:"body",label:"Message",type:"textarea",required:true},
+   {name:"audience",label:"Audience",type:"select",options:["everyone","students","guardians","staff"]},
+   {name:"priority",label:"Priority",type:"select",options:["normal","important","urgent"]}
+  ],columns:["title","audience","priority","created_at"],
+  labels:{title:"Title",audience:"Audience",priority:"Priority",created_at:"Published"},
+  createRoles:staffRoles
+ },
+ courses:{
+  title:"Courses",table:"courses",icon:"▤",
+  description:"Browse course details and learning resources.",
+  fields:[
+   {name:"code",label:"Course code",required:true},
+   {name:"title",label:"Course title",required:true},
+   {name:"description",label:"Description",type:"textarea"},
+   {name:"term",label:"Term / semester"},
+   {name:"teacher_name",label:"Teacher name"}
+  ],columns:["code","title","term","teacher_name"],
+  labels:{code:"Code",title:"Course",term:"Term",teacher_name:"Teacher"},
+  createRoles:["admin","teacher"]
+ },
+ assignments:{
+  title:"Assignments",table:"assignments",icon:"✓",
+  description:"Track classwork, due dates and submission instructions.",
+  fields:[
+   {name:"course_id",label:"Course ID (optional)"},
+   {name:"title",label:"Assignment title",required:true},
+   {name:"instructions",label:"Instructions",type:"textarea"},
+   {name:"due_date",label:"Due date",type:"date"},
+   {name:"max_score",label:"Maximum score",type:"number",default:"100"}
+  ],columns:["title","due_date","max_score","created_at"],
+  labels:{title:"Assignment",due_date:"Due date",max_score:"Max score",created_at:"Created"},
+  createRoles:["admin","teacher"]
+ },
+ grades:{
+  title:"Grades",table:"grades",icon:"▥",
+  description:"View assessment results. Teachers can record grades for authorized students.",
+  fields:[
+   {name:"student_id",label:"Student profile UUID",required:true},
+   {name:"course_id",label:"Course ID (optional)"},
+   {name:"assessment",label:"Assessment",required:true},
+   {name:"score",label:"Score",type:"number",required:true},
+   {name:"max_score",label:"Maximum score",type:"number",default:"100",required:true},
+   {name:"term",label:"Term / semester"}
+  ],columns:["assessment","score","max_score","term","created_at"],
+  labels:{assessment:"Assessment",score:"Score",max_score:"Out of",term:"Term",created_at:"Recorded"},
+  createRoles:["admin","teacher"]
+ },
+ attendance:{
+  title:"Attendance",table:"attendance",icon:"◷",
+  description:"Review and record daily student attendance.",
+  fields:[
+   {name:"student_id",label:"Student profile UUID",required:true},
+   {name:"attendance_date",label:"Date",type:"date",required:true},
+   {name:"status",label:"Status",type:"select",options:["present","absent","late","excused"]},
+   {name:"note",label:"Note (optional)"}
+  ],columns:["attendance_date","student_id","status","note"],
+  labels:{attendance_date:"Date",student_id:"Student ID",status:"Status",note:"Note"},
+  createRoles:["admin","teacher"]
+ },
+ requests:{
+  title:"Requests",table:"requests",icon:"✉",
+  description:"Submit and follow up on requests to the school office.",
+  fields:[
+   {name:"subject",label:"Request subject",required:true},
+   {name:"category",label:"Category",type:"select",
+    options:["general","records","leave","fees","technical","other"]},
+   {name:"message",label:"Request details",type:"textarea",required:true}
+  ],columns:["subject","category","status","created_at"],
+  labels:{subject:"Subject",category:"Category",status:"Status",created_at:"Submitted"},
+  createRoles:["student","guardian","teacher","staff","admin"]
+ },
+ contacts:{
+  title:"Contacts",table:"contacts",icon:"♧",
+  description:"Find school offices and staff contact information.",
+  fields:[
+   {name:"name",label:"Name / office",required:true},
+   {name:"role_title",label:"Position / department"},
+   {name:"email",label:"Email",type:"email"},
+   {name:"phone",label:"Phone"},
+   {name:"office",label:"Office / location"}
+  ],columns:["name","role_title","email","phone","office"],
+  labels:{name:"Name",role_title:"Position",email:"Email",phone:"Phone",office:"Office"},
+  createRoles:["admin","staff"]
+ }
+};
+
+function role(){return profile?.role || "student";}
+function canCreate(module){return module.createRoles.includes(role());}
+function notify(message,isError=false){
+ const el=$("toast");el.textContent=message;
+ el.style.background=isError?"#8f2929":"var(--green)";
+ el.classList.remove("hidden");
+ clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.add("hidden"),3500);
+}
+function showAuthMessage(message,error=false){
+ $("authMessage").textContent=message;
+ $("authMessage").className=error?"small error":"small muted";
+}
+function switchAuth(){
+ registerMode=!registerMode;
+ $("authTitle").textContent=registerMode?"Create your account":"Welcome back";
+ $("authSubtitle").textContent=registerMode?
+  "Register with your school email address.":"Sign in to continue to your school portal.";
+ $("authSubmit").textContent=registerMode?"Create account":"Sign in";
+ $("toggleAuth").textContent=registerMode?"Sign in instead":"Create an account";
+ $("registerFields").classList.toggle("hidden",!registerMode);
+ $("fullName").required=registerMode;
+ $("password").autocomplete=registerMode?"new-password":"current-password";
+ showAuthMessage("");
+}
+$("toggleAuth").addEventListener("click",switchAuth);
+
+$("authForm").addEventListener("submit",async event=>{
+ event.preventDefault();
+ if(!db){showAuthMessage("Add your Supabase URL and key in the source code first.",true);return;}
+ const email=$("email").value.trim(),password=$("password").value;
+ $("authSubmit").disabled=true;
+ try{
+  if(registerMode){
+   const fullName=$("fullName").value.trim();
+   const {error}=await db.auth.signUp({email,password,
+    options:{data:{full_name:fullName}}});
+   if(error)throw error;
+   showAuthMessage("Account created. Check your email if confirmation is enabled, then sign in. A school administrator must assign your correct role.");
+  }else{
+   const {error}=await db.auth.signInWithPassword({email,password});
+   if(error)throw error;
+  }
+ }catch(error){showAuthMessage(error.message||"Authentication failed.",true);}
+ finally{$("authSubmit").disabled=false;}
+});
+
+async function loadProfile(){
+ const {data,error}=await db.from("profiles").select("id,full_name,email,role")
+  .eq("id",currentUser.id).maybeSingle();
+ if(error)throw error;
+ if(!data)throw new Error("Your school profile is not set up yet. Contact the school administrator.");
+ profile=data;
+}
+async function openApp(){
+ try{
+  await loadProfile();
+  $("authScreen").classList.add("hidden");$("app").classList.remove("hidden");
+  $("userName").textContent=profile.full_name||profile.email||"User";
+  $("userRole").textContent=role().replace("_"," ");
+  $("avatar").textContent=(profile.full_name||profile.email||"U").trim().charAt(0).toUpperCase();
+  $("todayText").textContent=timeNow();
+  renderNav();await navigate("dashboard");
+ }catch(error){notify(error.message||"Unable to load profile.",true);}
+}
+function renderNav(){
+ document.querySelectorAll(".nav-btn[data-page]").forEach(btn=>{
+  const page=btn.dataset.page;
+  btn.classList.toggle("hidden",page==="profile"?false:
+   (["attendance","grades"].includes(page)?false:false));
+ });
+}
+async function navigate(page){
+ activePage=page;
+ document.querySelectorAll(".nav-btn[data-page]").forEach(b=>
+  b.classList.toggle("active",b.dataset.page===page));
+ $("topTitle").textContent=page==="profile"?"My profile":
+  page.charAt(0).toUpperCase()+page.slice(1);
+ $("sidebar").classList.remove("open");
+ if(page==="dashboard")return renderDashboard();
+ if(page==="calendar")return renderCalendar();
+ if(page==="profile")return renderProfile();
+ if(!modules[page])return;
+ await renderModule(page);
+}
+document.querySelectorAll(".nav-btn[data-page]").forEach(btn=>
+ btn.addEventListener("click",()=>navigate(btn.dataset.page)));
+$("menuToggle").addEventListener("click",()=>$("sidebar").classList.toggle("open"));
+$("signOut").addEventListener("click",async()=>{
+ if(db)await db.auth.signOut();
+ currentUser=null;profile=null;
+ $("app").classList.add("hidden");$("authScreen").classList.remove("hidden");
+});
+
+function heading(title,description,action=""){
+ return `<div class="page-heading"><div><h1>${esc(title)}</h1>
+ <p>${esc(description)}</p></div>${action}</div>`;
+}
+function stat(icon,label,value,caption){
+ return `<div class="card"><div class="stat-top"><span class="stat-label">${esc(label)}</span>
+ <span class="stat-icon">${icon}</span></div><div class="stat-value">${esc(value)}</div>
+ <div class="stat-label">${esc(caption)}</div></div>`;
+}
+async function getRows(table,limit=8){
+ let query=db.from(table).select("*").order("created_at",{ascending:false}).limit(limit);
+ const {data,error}=await query;
+ if(error)throw error;
+ return data||[];
+}
+async function renderDashboard(){
+ const host=$("pageContent");
+ host.innerHTML=heading("Good day, "+(profile.full_name||"there")+" 👋",
+  "Here is what's happening in your school community.")+
+  `<div class="grid stats" id="stats">${stat("◉","Announcements","—","School updates")}
+  ${stat("▤","Courses","—","Learning spaces")}
+  ${stat("✓","Assignments","—","Classwork and deadlines")}
+  ${stat("✉","Requests","—","School office requests")}</div>
+  <div class="grid two-col"><div class="card"><h3 class="card-title">Latest announcements</h3>
+  <div id="recentAnnouncements" class="list"><div class="muted">Loading updates…</div></div></div>
+  <div class="card"><h3 class="card-title">Quick access</h3><div class="list">
+  ${["courses","assignments","grades","attendance","requests","contacts"].map(p=>
+   `<button class="nav-btn" style="color:var(--text);background:#f7faf8;margin:5px 0"
+    data-quick="${p}">${modules[p].icon} &nbsp; ${modules[p].title} <span style="margin-left:auto">→</span></button>`
+  ).join("")}</div></div></div>`;
+ host.querySelectorAll("[data-quick]").forEach(b=>b.addEventListener("click",()=>navigate(b.dataset.quick)));
+ try{
+  const [announcements,courses,assignments,requests]=await Promise.all([
+   getRows("announcements",100),getRows("courses",100),getRows("assignments",100),getRows("requests",100)
+  ]);
+  const values=[announcements.length,courses.length,assignments.length,requests.length];
+  host.querySelector("#stats").innerHTML=[
+   stat("◉","Announcements",values[0],"Published updates"),
+   stat("▤","Courses",values[1],"Available courses"),
+   stat("✓","Assignments",values[2],"Published tasks"),
+   stat("✉","Requests",values[3],"Visible requests")
+  ].join("");
+  host.querySelector("#recentAnnouncements").innerHTML=announcements.slice(0,5).map(a=>
+   `<div class="list-item"><strong>${esc(a.title)}</strong>
+   <div class="muted small">${esc(a.audience||"everyone")} · ${dateText(a.created_at)}</div>
+   <p>${esc((a.body||"").slice(0,160))}</p></div>`).join("")||
+   `<div class="empty">No announcements yet.</div>`;
+ }catch(error){notify("Some dashboard data could not be loaded: "+error.message,true);}
+}
+function fieldMarkup(f){
+ const val=f.default??"";
+ const label=`<label for="field_${esc(f.name)}">${esc(f.label)}${f.required?" *":""}</label>`;
+ if(f.type==="textarea")return `<div class="field ${f.full?"span-2":""}">${label}
+  <textarea id="field_${esc(f.name)}" name="${esc(f.name)}" ${f.required?"required":""}></textarea></div>`;
+ if(f.type==="select")return `<div class="field">${label}<select id="field_${esc(f.name)}"
+  name="${esc(f.name)}" ${f.required?"required":""}>${(f.options||[]).map(o=>
+  `<option value="${esc(o)}">${esc(o.charAt(0).toUpperCase()+o.slice(1))}</option>`).join("")}
+  </select></div>`;
+ return `<div class="field">${label}<input id="field_${esc(f.name)}" name="${esc(f.name)}"
+  type="${esc(f.type||"text")}" ${f.required?"required":""} ${f.type==="number"?'min="0" step="any"':""}
+  value="${esc(val)}"></div>`;
+}
+function formatCell(col,value){
+ if(col.endsWith("_at")||col.endsWith("_date"))return esc(dateText(value));
+ if(col==="priority")return `<span class="pill ${value==="urgent"?"red":value==="important"?"warn":""}">${esc(value||"normal")}</span>`;
+ if(col==="status")return `<span class="pill ${value==="rejected"||value==="absent"?"red":value==="pending"?"warn":""}">${esc(value||"—")}</span>`;
+ return esc(value??"—");
+}
+async function renderModule(key){
+ const mod=modules[key],host=$("pageContent");
+ const addBtn=canCreate(mod)?`<button class="btn lime" id="toggleCreate">+ Add ${esc(mod.title.replace(/s$/,""))}</button>`:"";
+ host.innerHTML=heading(mod.title,mod.description,addBtn)+
+  `<div class="card hidden" id="createCard"><h3 class="card-title">Create ${esc(mod.title.replace(/s$/,""))}</h3>
+   <form id="createForm"><div class="form-grid">${mod.fields.map(fieldMarkup).join("")}</div>
+   <div class="form-actions"><button type="button" class="btn secondary" id="cancelCreate">Cancel</button>
+   <button class="btn" type="submit">Save record</button></div></form></div>
+   <div class="card" style="margin-top:18px"><div class="toolbar">
+    <input id="filterRows" type="search" placeholder="Search ${esc(mod.title.toLowerCase())}…">
+    <span class="muted small" id="rowCount"></span></div>
+    <div id="tableHost"><div class="empty">Loading records…</div></div></div>`;
+ if(canCreate(mod)){
+  $("toggleCreate").addEventListener("click",()=>$("createCard").classList.toggle("hidden"));
+  $("cancelCreate").addEventListener("click",()=>$("createCard").classList.add("hidden"));
+  $("createForm").addEventListener("submit",e=>saveRecord(e,key));
+ }
+ $("filterRows").addEventListener("input",()=>filterTable());
+ try{
+  let rows=await getRows(key==="requests"?"requests":mod.table,200);
+  if(key==="announcements"){
+   rows=rows.filter(r=>r.audience==="everyone"||r.audience===role()||
+    (role()==="student"&&r.audience==="students")||
+    (role()==="guardian"&&r.audience==="guardians")||
+    (staffRoles.includes(role())&&r.audience==="staff"));
+  }
+  window.__moduleRows=rows;
+  drawTable(key,rows);
+ }catch(error){
+  $("tableHost").innerHTML=`<div class="empty">Unable to load records. ${esc(error.message)}</div>`;
+  notify("Could not load "+mod.title+": "+error.message,true);
+ }
+}
+function drawTable(key,rows){
+ const mod=modules[key],host=$("tableHost");
+ $("rowCount").textContent=rows.length+" record(s)";
+ if(!rows.length){host.innerHTML=`<div class="empty">No records found.</div>`;return;}
+ host.innerHTML=`<div class="table-wrap"><table><thead><tr>
+ ${mod.columns.map(c=>`<th>${esc(mod.labels[c]||c)}</th>`).join("")}
+ </tr></thead><tbody>${rows.map(row=>`<tr>${mod.columns.map(c=>
+ `<td>${formatCell(c,row[c])}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+}
+function filterTable(){
+ const q=$("filterRows").value.toLowerCase();
+ drawTable(activePage,(window.__moduleRows||[]).filter(row=>
+  Object.values(row).some(v=>String(v??"").toLowerCase().includes(q))));
+}
+async function saveRecord(event,key){
+ event.preventDefault();
+ const mod=modules[key],form=event.currentTarget,record={};
+ for(const f of mod.fields){
+  const el=form.elements[f.name];if(!el)continue;
+  const raw=el.value.trim();
+  if(raw==="")continue;
+  record[f.name]=f.type==="number"?Number(raw):raw;
+ }
+ if(key==="announcements")record.created_by=currentUser.id;
+ if(key==="courses")record.created_by=currentUser.id;
+ if(key==="assignments")record.created_by=currentUser.id;
+ if(key==="grades")record.recorded_by=currentUser.id;
+ if(key==="attendance")record.recorded_by=currentUser.id;
+ if(key==="requests")record.requester_id=currentUser.id;
+ if(key==="contacts")record.created_by=currentUser.id;
+ try{
+  const {error}=await db.from(mod.table).insert(record);
+  if(error)throw error;
+  notify("Record saved successfully.");
+  await renderModule(key);
+ }catch(error){notify("Could not save record: "+error.message,true);}
+}
+async function renderCalendar(){
+ const host=$("pageContent");
+ host.innerHTML=heading("School calendar","Keep track of school dates, events and deadlines.")+
+  `<div class="card"><h3 class="card-title">Upcoming events</h3>
+  <div class="notice">Calendar event storage is not configured in this starter.
+  Add an events table and event-management screen to enable shared calendar entries.</div>
+  <p class="muted">You can already view assignment due dates under Assignments.</p>
+  <button class="btn" id="goAssignments">View assignments</button></div>`;
+ $("goAssignments").onclick=()=>navigate("assignments");
+}
+function renderProfile(){
+ $("pageContent").innerHTML=heading("My profile","Your school account details.")+
+  `<div class="card" style="max-width:650px"><div class="grid" style="gap:14px">
+   <div><div class="small muted">Full name</div><strong>${esc(profile.full_name||"Not set")}</strong></div>
+   <div><div class="small muted">Email</div><strong>${esc(profile.email||currentUser.email||"—")}</strong></div>
+   <div><div class="small muted">Role</div><span class="pill">${esc(role())}</span></div>
+   <div><div class="small muted">Profile ID</div><code>${esc(profile.id)}</code></div>
+  </div><div class="notice">If your role or name is incorrect, contact your school administrator.
+  Do not share your password or account credentials.</div></div>`;
+}
+
+async function init(){
+ $("todayText").textContent=timeNow();
+ if(!SCHOOL_CONFIG.url.startsWith("https://")||
+    SCHOOL_CONFIG.key.includes("YOUR_SUPABASE")){
+  showAuthMessage("Setup required: configure your Supabase URL and publishable key in SCHOOL_CONFIG.",true);
+  return;
+ }
+ db=window.supabase.createClient(SCHOOL_CONFIG.url,SCHOOL_CONFIG.key);
+ const {data,error}=await db.auth.getSession();
+ if(error){showAuthMessage(error.message,true);return;}
+ if(data.session){currentUser=data.session.user;await openApp();}
+ db.auth.onAuthStateChange((_event,session)=>{
+  setTimeout(async()=>{
+   if(session){currentUser=session.user;await openApp();}
+   else{currentUser=null;profile=null;$("app").classList.add("hidden");
+    $("authScreen").classList.remove("hidden");}
+  },0);
+ });
+}
+init();
+</script>
+</body>
+</html>
